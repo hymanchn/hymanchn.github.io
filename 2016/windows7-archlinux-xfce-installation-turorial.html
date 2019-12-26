@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>Windows7 + ArchLinux xfce 双系统教程 | hyman's blog</title><link rel="stylesheet" type="text/css" href="//fonts.css.network/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.3.0"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=1.3.0"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Windows7 + ArchLinux xfce 双系统教程</h1><a id="logo" href="/.">hyman's blog</a><p class="description"></p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">Windows7 + ArchLinux xfce 双系统教程</h1><div class="post-meta">Nov 29, 2016<span> | </span><span class="category"><a href="/categories/Linux/">Linux</a></span></div><div class="post-content"><h2 id="Windows7-ArchLinux-xfce-双系统教程"><a href="#Windows7-ArchLinux-xfce-双系统教程" class="headerlink" title="Windows7 + ArchLinux xfce 双系统教程"></a>Windows7 + ArchLinux xfce 双系统教程</h2><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>Archlinux官网下载admincd镜像</p>
+<blockquote>
+<p><a href="http://www.archlinux.org/" target="_blank" rel="external">http://www.archlinux.org/</a></p>
+</blockquote>
+<p>rufus刻录入U盘</p>
+<blockquote>
+<p><a href="https://rufus.akeo.ie/" target="_blank" rel="external">https://rufus.akeo.ie/</a></p>
+</blockquote>
+<p>Windows 压缩卷压缩空闲空间（linux安装空间）<br>Windows U盘启动进入archlinux安装盘</p>
+<a id="more"></a>
+<h3 id="安装基本系统"><a href="#安装基本系统" class="headerlink" title="安装基本系统"></a>安装基本系统</h3><p>查看分区信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fdisk -l</div></pre></td></tr></table></figure></p>
+<p>分区<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cfdisk</div></pre></td></tr></table></figure></p>
+<p>选择free space，new创建archlinux分区，参考:</p>
+<table>
+<thead>
+<tr>
+<th>盘符</th>
+<th>内容</th>
+<th>大小</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dev/sdaX</td>
+<td>/boot</td>
+<td>200M(1G)</td>
+<td>83 linux</td>
+<td>引导区</td>
+</tr>
+<tr>
+<td>dev/sdaX+1</td>
+<td>/swap</td>
+<td>&gt;=内存</td>
+<td>82 swap</td>
+<td>交换分区</td>
+</tr>
+<tr>
+<td>dev/sdaX+2</td>
+<td>/</td>
+<td>50% of FreeSpace - dev/sdaX - dev/sdaX+1</td>
+<td>83 linux</td>
+<td>根分区</td>
+</tr>
+<tr>
+<td>dev/sdaX+3</td>
+<td>/home</td>
+<td>50% of FreeSpace</td>
+<td>83 linux</td>
+<td>用户目录</td>
+</tr>
+</tbody>
+</table>
+<p>write写入</p>
+<p>格式化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkfs.ext4 /dev/sdaX</div><div class="line">mkswap /dev/sdaX+1</div><div class="line">mkfs.ext4 /dev/sdaX+2</div><div class="line">mkfs.ext4 /dev/sdaX+3</div></pre></td></tr></table></figure></p>
+<p>挂载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mount /dev/sdaX+2 /mnt</div><div class="line">mkdir /mnt/boot</div><div class="line">mount /dev/sdaX /mnt/boot</div><div class="line">swapon /dev/sdaX+1</div><div class="line">mkdir /mnt/home</div><div class="line">mount /dev/sdaX+3 /mnt/home</div></pre></td></tr></table></figure></p>
+<p>配置pacman源(163)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nano -w /etc/pacman</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Ctrl+O保存 Ctrl+X退出</p>
+</blockquote>
+<p>首行添加</p>
+<blockquote>
+<p>## Score = 0.1 China<br>Server = <a href="http://mirrors.163.com/archlinux/$repo/os/$arch" target="_blank" rel="external">http://mirrors.163.com/archlinux/$repo/os/$arch</a></p>
+</blockquote>
+<p>连接网络(有线参考官方wiki)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wifi-menu</div><div class="line">pacman -Syy(更新本地库和软件，不更新软件使用-Sy)</div></pre></td></tr></table></figure></p>
+<p>安装基本系统<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacstrap -i /mnt base base-devel net-tools dialog</div></pre></td></tr></table></figure></p>
+<p>生成fstab<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">genfstab -U -p /mnt &gt;&gt; /mnt/etc/fstab</div><div class="line">chroot</div><div class="line">arch-chroot /mnt /bin/bash</div></pre></td></tr></table></figure></p>
+<p>配置语言<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">nano -w /etc/locale.gen(开启zh_CN全部编码、en_US.UTF-8)</div><div class="line">locale.gen</div><div class="line">echo LANG=en_US.UTF-8 &gt;&gt; /etc/locale.conf</div></pre></td></tr></table></figure></p>
+<p>设置vconsole（可选）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nano -w /etc/vconsole.conf</div></pre></td></tr></table></figure></p>
+<p>添加</p>
+<blockquote>
+<p>KEYMAP=us<br>FONT=</p>
+</blockquote>
+<p>时间查看(时间修改应和windows7保持一致，一般不需要修改)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">date</div></pre></td></tr></table></figure></p>
+<p>设置主机名<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">echo 主机名 &gt; /etc/hostname</div><div class="line">nano -w /etc/hosts</div></pre></td></tr></table></figure></p>
+<p>localhost后添加 主机名 例</p>
+<blockquote>
+<p>127.0.0.1    localhost.localdomain    localhost 主机名<br>::1            localhost.localdomain    localhost 主机名</p>
+</blockquote>
+<p>生成初始ramdisk环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkinitcpio -p linux</div></pre></td></tr></table></figure></p>
+<p>修改root密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">passwd</div></pre></td></tr></table></figure></p>
+<p>创建普通用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">useradd -m -g users -G wheel,video,audio -s /bin/bash 用户名</div><div class="line">passwd 用户名</div></pre></td></tr></table></figure></p>
+<p>安装启动器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S grub-bios</div></pre></td></tr></table></figure></p>
+<p>安装grub至boot分区<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">chattr -i /boot/grub/i386-pc/core.img</div><div class="line">grub-install --target=i386-pc --debug --force /dev/sdaX(/boot所在分区)</div><div class="line">chattr +i /boot/grub/i386-pc/core.img</div><div class="line">grub-mkconfig -o /boot/grub/grub.cfg</div></pre></td></tr></table></figure></p>
+<p>重启<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">exit</div><div class="line">umount /mnt/boot</div><div class="line">umount /mnt/home</div><div class="line">umount /mnt</div><div class="line">reboot</div></pre></td></tr></table></figure></p>
+<p>弹出U盘进入windows</p>
+<h3 id="windows引导archlinux"><a href="#windows引导archlinux" class="headerlink" title="windows引导archlinux"></a>windows引导archlinux</h3><p>安装easybcd(或grub4dos)<br>点击Add New Entry，选择NeoGrub，点击Install，点击Configure<br>添加内容:</p>
+<blockquote>
+<p>default 0<br>timeout 1</p>
+<p>title Chainload into GRUB v2<br>root (hd0,Y)<br>chainloader +1<br>boot</p>
+</blockquote>
+<p>此处hd0为第一块硬盘，第二块hd1。Y表示分区号，主分区分别用(hd0m0)~(hd0,3)表示，逻辑分区从(hd0,4)开始，第一逻辑分区(hd0,4),第二逻辑分区(hd0,5)，以此类推。一般情况c盘用(hd0,0),D盘用(hd0,5)。光盘用(cd)表示，第一软驱用(fd0)表示。可参照下表,</p>
+<table>
+<thead>
+<tr>
+<th>盘符</th>
+<th>C:</th>
+<th>D:</th>
+<th>E:</th>
+<th>F:</th>
+<th>G:</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>表示</td>
+<td>(hd0,0)</td>
+<td>(hd0,4)</td>
+<td>(hd0,5)</td>
+<td>(hd0,6)</td>
+<td>(hd0,7)</td>
+</tr>
+</tbody>
+</table>
+<p>保存后(Advanced Settings可修改选项名称，Save Settings保存)重启</p>
+<p>引导原理：<br>windows bcd添加grub引导项，grub引导archlinux的grub启动archlinux系统。（链式引导 chainloader）</p>
+<p>选择第二项进入archlinux</p>
+<h3 id="安装桌面环境"><a href="#安装桌面环境" class="headerlink" title="安装桌面环境"></a>安装桌面环境</h3><p>连接网络(有线参考官方wiki)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wifi-menu</div></pre></td></tr></table></figure></p>
+<p>安装驱动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pacman -S alsa-utils(声卡)</div><div class="line">pacman -S mesa xf86-video-intel(intel显卡,A卡:xf86-video-ati，N卡：xf86-video-nouveau)</div><div class="line">pacman -S xf86-input-synaptics(触摸板)</div></pre></td></tr></table></figure></p>
+<p>安装xorg<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -S xorg xorg-twm xorg-xinit xterm</div><div class="line">startx测试，启动界面(成功)，exit退出</div></pre></td></tr></table></figure></p>
+<p>安装xfce4<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -s xfce4 (默认全部)</div><div class="line">nano -w ~/.xinitrc</div></pre></td></tr></table></figure></p>
+<p>添加</p>
+<blockquote>
+<p>exec startxfce4</p>
+</blockquote>
+<p>添加执行权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chmod +x ~/.xinitrc</div><div class="line">startx可启动桌面环境</div></pre></td></tr></table></figure></p>
+<p>登陆管理器lightdm或sddm(可选,配置参考官方wiki)<br>Aur可使用yaourt(可选)</p>
+<p>安装终端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S xfce4-terminal</div></pre></td></tr></table></figure></p>
+<p>安装网络管理<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -S networkmanager</div><div class="line">ststemctl enable networkmanager</div></pre></td></tr></table></figure></p>
+<p>中文字体<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S wqy-zenhei wqy-microhei ttf-arphic-ukai ttf-arphic-uming wqy-bitmapfont opendesktop-uming(一种或多种)</div></pre></td></tr></table></figure></p>
+<p>输入法ibus-rime(或fcitx)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -S ibus-rime</div><div class="line">nano -w ~/.xprofile</div></pre></td></tr></table></figure></p>
+<p>添加</p>
+<blockquote>
+<p>export GTK_IM_MODULE=ibus<br>export QT_IM_MODULE=ibus<br>export XMODIFIERS=@im=ibus</p>
+</blockquote>
+<p>安装解压<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S unrar unzip p7zip</div></pre></td></tr></table></figure></p>
+<p>其他Applications<br><a href="https://wiki.archlinux.org/index.php/List_of_applications" target="_blank" rel="external">https://wiki.archlinux.org/index.php/List_of_applications</a><br><a href="http://packages.archlinux.org" target="_blank" rel="external">http://packages.archlinux.org</a></p>
+<p>完成</p>
+<p>Reference</p>
+<p>1.Archlinux installation guide<br><a href="http://wiki.archlinux.org/index.php/Installation_guide" target="_blank" rel="external">http://wiki.archlinux.org/index.php/Installation_guide</a></p>
+<p>2.Archlinux wiki<br><a href="http://wiki.archlinux.org/" target="_blank" rel="external">http://wiki.archlinux.org/</a></p>
+<p>3.Archlinux 安装教程<br><a href="http://blog.lucode.net/linux/archlinux-install-tutorial.html" target="_blank" rel="external">http://blog.lucode.net/linux/archlinux-install-tutorial.html</a></p>
+<p>4.Archlinux 2015.07.01 和 Windows7 双系统 安装教程<br><a href="http://www.cnblogs.com/fangying7/p/3803290.html" target="_blank" rel="external">http://www.cnblogs.com/fangying7/p/3803290.html</a></p>
+<p>5.Windows7与arch-linux双系统安装方法<br><a href="http://m.blog.csdn.net/article/details?id=11377195" target="_blank" rel="external">http://m.blog.csdn.net/article/details?id=11377195</a></p>
+<p>6.Win7 添加grub引导Linux最简单方法<br><a href="http://m.blog.chinaunix.net/uid-14735472-id-2845735.html" target="_blank" rel="external">http://m.blog.chinaunix.net/uid-14735472-id-2845735.html</a></p>
+<p>7.Grub4dos教程<br><a href="http://wk.baidu.com/view/fc83026aaf1ffc4ffe47acb9#1" target="_blank" rel="external">http://wk.baidu.com/view/fc83026aaf1ffc4ffe47acb9#1</a></p>
+</div><div class="tags"></div><div class="post-nav"><a href="/2017/a-real-network-dataset-analysis.html" class="next">A real network dataset analysis</a></div><div id="comments"></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="widget"><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="请输入关键字..."/></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Algorithm/">Algorithm</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-fei"> Archive</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">January 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">November 2016</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> Blogroll</i></div><ul><li><a href="https://crossoverjie.top" title="crossoverJie's Blog" target="_blank"></li> crossoverJie's Blog</a></ul></div></div></div></div><a id="totop" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.3.0" async></script><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">网站地图</a> |<a href="/atom.xml">订阅本站</a> |<span>联系博主：<a href="mailto:undefined" target="_blank" class="fa fa-email"> </a><a href="undefined" target="_blank" class="fa fa-github"> </a></span></p><p><span> Copyright &copy;<a href="/." rel="nofollow">hyman</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span><span><a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> Theme </a>by<a rel="nofollow" target="_blank" href="https://github.com/chaooo"> Charles.</a></span></p></div></div></div><script type="text/javascript" src="/js/search.json.js?v=1.3.0"></script></body></html>

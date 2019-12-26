@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>hyman&#39;s blog</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://localhost:4000/"/>
+  <updated>2019-02-23T03:36:00.549Z</updated>
+  <id>http://localhost:4000/</id>
+  
+  <author>
+    <name>hyman</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>A real network dataset analysis</title>
+    <link href="http://localhost:4000/2017/a-real-network-dataset-analysis.html"/>
+    <id>http://localhost:4000/2017/a-real-network-dataset-analysis.html</id>
+    <published>2017-01-08T10:10:00.000Z</published>
+    <updated>2019-02-23T03:36:00.549Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="A-real-network-dataset-analysis"><a href="#A-real-network-dataset-analysis" class="headerlink" title="A real network dataset analysis"></a>A real network dataset analysis</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(igraph)</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="graph-sample"><a href="#graph-sample" class="headerlink" title="graph sample"></a>graph sample</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#sample </span></div><div class="line">g &lt;- make_graph(<span class="string">"Zachary"</span>)</div><div class="line">plot(g,layout = layout.fruchterman.reingold, </div><div class="line">     vertex.size = <span class="number">10</span>,</div><div class="line">    vertex.color = V(g)$color, </div><div class="line">     <span class="comment">#vertex.label.color = NA,</span></div><div class="line">     edge.color = grey(<span class="number">0.5</span>),</div><div class="line">    edge.arrow.mode = <span class="string">"-"</span>)</div></pre></td></tr></table></figure>
+<p><img src="../upload/20170108/20170108_output_3_0.png" alt="png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#read gml (dataset : http://www-personal.umich.edu/~mejn/netdata/football.zip)</span></div><div class="line">gg=read_graph(file = <span class="string">"football.gml"</span>,format = <span class="string">"gml"</span>)</div><div class="line">plot(gg,layout = layout.fruchterman.reingold, </div><div class="line">     vertex.size = <span class="number">10</span>,</div><div class="line">    vertex.color = V(gg)$color, </div><div class="line">     <span class="comment">#vertex.label.color = NA,</span></div><div class="line">     <span class="comment">#</span></div><div class="line">     edge.color = grey(<span class="number">0.5</span>),</div><div class="line">    edge.arrow.mode = <span class="string">"-"</span>)</div></pre></td></tr></table></figure>
+<p><img src="../upload/20170108/20170108_output_4_0.png" alt="png"></p>
+<h3 id="community"><a href="#community" class="headerlink" title="community"></a>community</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#com = walktrap.community(gg, steps = 5)</span></div><div class="line">com=cluster_walktrap(gg, weights = E(gg)$weight, steps = <span class="number">4</span>, merges = <span class="literal">TRUE</span>, modularity = <span class="literal">TRUE</span>, membership = <span class="literal">TRUE</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#subgroup = split(com$merges, com$membership)</span></div><div class="line"><span class="comment">## subgroup</span></div><div class="line">V(gg)$sg = com$membership+<span class="number">1</span></div><div class="line">V(gg)$color = rainbow(max(V(gg)$sg))[V(gg)$sg]</div><div class="line"><span class="comment">## png("net_walktrap.png", width = 500, height = 500)</span></div><div class="line">par(mar = c(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>))</div><div class="line">set.seed(<span class="number">14</span>)</div><div class="line">plot(gg, layout = layout.fruchterman.reingold, vertex.size = <span class="number">5</span>,</div><div class="line">    vertex.color = V(gg)$color, vertex.label = <span class="literal">NA</span>, edge.color = grey(<span class="number">0.5</span>),</div><div class="line">    edge.arrow.mode = <span class="string">"-"</span>)</div><div class="line"><span class="comment">## dev.off()</span></div><div class="line">print(max(V(gg)$sg)-<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<pre><code>[1] 10
+</code></pre><p><img src="../upload/20170108/20170108_output_7_1.png" alt="png"></p>
+<h3 id="subgraph-density"><a href="#subgraph-density" class="headerlink" title="subgraph density"></a>subgraph density</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">subgraph_1 = split(com$merges, com$membership)</div></pre></td></tr></table></figure>
+<pre><code>Warning message in split.default(com$merges, com$membership):
+“data length is not a multiple of split variable”
+</code></pre><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">subgraph_1[[<span class="number">8</span>]]</div></pre></td></tr></table></figure>
+<pre><code>20 19 4 13 82 62 141 162 207 221 35 96 27 128 143 173 172 187 223 226
+</code></pre><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">graph.density(gg)</div></pre></td></tr></table></figure>
+<p>0.0935163996948894</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sg8=subgraph(gg,V(gg)[sg==<span class="number">8</span>])</div><div class="line">graph.density(sg8)</div></pre></td></tr></table></figure>
+<pre><code>Warning message in .Call(&quot;R_igraph_subgraph&quot;, graph, as.igraph.vs(graph, v) - 1, :
+“At structural_properties.c:1945 :igraph_subgraph is deprecated from igraph 0.6, use igraph_induced_subgraph instead”
+</code></pre><p>0.727272727272727</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">library</span>(ggplot2)</div><div class="line">sg_d=c()</div><div class="line"><span class="keyword">for</span>(i <span class="keyword">in</span> (<span class="number">1</span>:<span class="number">10</span>))&#123;</div><div class="line">    <span class="comment">#sg from 2</span></div><div class="line">    sg_t=subgraph(gg,V(gg)[sg==(i+<span class="number">1</span>)])</div><div class="line">    d=graph.density(sg_t)</div><div class="line">    sg_d[i]=d</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">data_d=data.frame(com=c(as.character(<span class="number">1</span>:<span class="number">10</span>)),density=sg_d)</div><div class="line">data_d$com = factor(data_d$com, levels=data_d$com)</div><div class="line">p = ggplot(data_d, aes(x=com, y=density, fill=com,group=factor(<span class="number">1</span>))) +geom_bar(stat=<span class="string">"identity"</span>, width=<span class="number">0.5</span>, position=position_dodge(<span class="number">0.6</span>)) + <span class="comment">#值越大越离得远</span></div><div class="line">    geom_text(aes(label = com, vjust = -<span class="number">0.8</span>, hjust = <span class="number">0.5</span>, color = com), show.legend = <span class="literal">FALSE</span>)</div><div class="line"><span class="comment">#p=ggplot(data_d, aes(sg_d)) + geom_bar()</span></div><div class="line">plot(p)</div></pre></td></tr></table></figure>
+<p><img src="../upload/20170108/20170108_output_14_0.png" alt="png"></p>
+<h3 id="node-betweenness"><a href="#node-betweenness" class="headerlink" title="node betweenness"></a>node betweenness</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">V(gg)$bte = betweenness(gg, directed = <span class="literal">F</span>)</div><div class="line"><span class="comment">## png("net_betweenness.png", width = 500, height = 500)</span></div><div class="line">par(mar = c(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>))</div><div class="line"><span class="comment">#plot(V(gg)$bte,xlab="index",ylab="betweenness",col="green")</span></div><div class="line"><span class="comment">## dev.off()</span></div><div class="line">data_v=data.frame(index=<span class="number">1</span>:length(V(gg)),betweenness=V(gg)$bte)</div><div class="line">p = ggplot(data_v,aes(x=index,y=betweenness,colour=<span class="string">"index"</span>)) +geom_point(size=<span class="number">3</span>) + <span class="comment">#</span></div><div class="line">    geom_text(aes(label = index,vjust = -<span class="number">0.8</span>, hjust = <span class="number">0.5</span>), show.legend = <span class="literal">FALSE</span>)</div><div class="line"><span class="comment">#p=ggplot(data_d, aes(sg_d)) + geom_bar()</span></div><div class="line">plot(p)</div></pre></td></tr></table></figure>
+<p><img src="../upload/20170108/20170108_output_16_0.png" alt="png"></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">V(gg)$size = <span class="number">5</span></div><div class="line">V(gg)[bte&gt;=<span class="number">150</span>]$size = <span class="number">15</span></div><div class="line"><span class="comment">#V(gg)$label=NA</span></div><div class="line"><span class="comment">#V(gg)[bte&gt;=150]$label=V(gg)[bte&gt;=150]$name</span></div><div class="line"><span class="comment">#V(gg)[bte&gt;=150]$label</span></div><div class="line">V(gg)$cex=<span class="number">1</span></div><div class="line">V(gg)[bte&gt;=<span class="number">150</span>]$cex=<span class="number">2</span></div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## png("net_walktrap_betweenness.png", width = 500, height = 500)</span></div><div class="line">par(mar = c(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>))</div><div class="line">set.seed(<span class="number">14</span>)</div><div class="line">plot(gg, layout = layout.fruchterman.reingold, vertex.size = V(gg)$size,</div><div class="line">    vertex.color = V(gg)$color, vertex.label = V(gg)$label,</div><div class="line">    vertex.label.cex=V(gg)$cex, edge.color = grey(<span class="number">0.5</span>),</div><div class="line">    edge.arrow.mode = <span class="string">"-"</span>)</div><div class="line"><span class="comment">## dev.off()</span></div><div class="line">V(gg)[bte&gt;=<span class="number">150</span>]$label</div></pre></td></tr></table></figure>
+<pre><code>&apos;BrighamYoung&apos; &apos;CentralMichigan&apos; &apos;LouisianaTech&apos; &apos;NewMexicoState&apos; &apos;Navy&apos; &apos;NotreDame&apos; &apos;Cincinnati&apos;
+</code></pre><p><img src="../upload/20170108/20170108_output_18_1.png" alt="png"></p>
+<h3 id="a-sample-of-recommendation"><a href="#a-sample-of-recommendation" class="headerlink" title="a sample of recommendation"></a>a sample of recommendation</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">neighbors(gg,V(gg)$label==<span class="string">"BrighamYoung"</span>)</div><div class="line">V(gg)[<span class="number">5</span>]$label</div></pre></td></tr></table></figure>
+<pre><code>+ 12/115 vertices:
+ [1]   2   5  10  17  24  34  36  42  66  91  94 105
+
+
+&apos;NewMexico&apos;
+</code></pre><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#hashmap instead</span></div><div class="line"><span class="comment">#map=c()</span></div><div class="line"><span class="comment">#names(map)=c()</span></div></pre></td></tr></table></figure>
+<h4 id="based-on-betweenness"><a href="#based-on-betweenness" class="headerlink" title="based on betweenness"></a>based on betweenness</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#neighbors(gg,V(gg)$label=="BrighamYoung",mode = c("out", "in", "all", "total"))</span></div><div class="line"><span class="comment">#tmp = neighbors(gg,V(gg)$label=="BrighamYoung") %in% neighbors(gg,V(gg)$label=="NewMexico")</span></div><div class="line"><span class="comment">#tmp</span></div><div class="line"><span class="comment">#tmp1 = setdiff(neighbors(gg,V(gg)$label=="BrighamYoung") , neighbors(gg,V(gg)$label=="NewMexico"))</span></div><div class="line">tmp1 = setdiff(V(gg),neighbors(gg,V(gg)$label==<span class="string">"NewMexico"</span>))</div><div class="line">tmp1_bte=V(gg)[tmp1]$bte</div><div class="line"><span class="comment">#t=table(tmp1_bte,names=tmp1)</span></div><div class="line"><span class="comment">#t</span></div><div class="line">t=tmp1_bte</div><div class="line">names(t)=tmp1</div><div class="line">listall = sort(t, dec = <span class="literal">T</span>)</div><div class="line">top = listall[<span class="number">1</span>:length(t)]</div><div class="line"><span class="comment">#top</span></div><div class="line"><span class="comment">#names(which(t[1,]==1))</span></div><div class="line">t1 = top[<span class="number">1</span>:<span class="number">5</span>]</div><div class="line">t1_names=V(gg)[as.integer(names(t1))]$label</div><div class="line">names(t1)=t1_names</div><div class="line"><span class="comment">#t1[as.character(top[1])]</span></div><div class="line">t1</div></pre></td></tr></table></figure>
+<pre><code>NotreDame 215.98577427622
+Navy 187.826344074865
+LouisianaTech 185.647805653186
+CentralMichigan 162.228191494366
+Cincinnati 153.529962162747
+</code></pre><h4 id="based-on-common-friends"><a href="#based-on-common-friends" class="headerlink" title="based on common friends"></a>based on common friends</h4><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># NewMexico好友</span></div><div class="line">t_n=neighbors(gg,V(gg)$label==<span class="string">"NewMexico"</span>)</div><div class="line"><span class="comment"># 非好友</span></div><div class="line">t_nn=setdiff(V(gg),t_n)</div><div class="line">t_nn=t_nn[-which(t_nn==<span class="number">5</span>)]</div><div class="line"><span class="comment"># 共同好友计算</span></div><div class="line">t_nn_ld=c()</div><div class="line">t_nn_=c()</div><div class="line">i=<span class="number">0</span></div><div class="line"><span class="keyword">for</span>(t_ <span class="keyword">in</span> t_nn)&#123;</div><div class="line">    d=sum(neighbors(gg,t_) %<span class="keyword">in</span>% t_n)</div><div class="line">    <span class="keyword">if</span>(d&gt;=<span class="number">1</span>)&#123;</div><div class="line">        i=i+<span class="number">1</span></div><div class="line">        t_nn_ld[i]=d</div><div class="line">        t_nn_[i]=t_</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">t_nn_linkdegree_dic=t_nn_ld</div><div class="line">names(t_nn_linkdegree_dic)=t_nn_</div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">t_nn_ld_=sort(t_nn_linkdegree_dic,dec=<span class="literal">T</span>)</div><div class="line"><span class="keyword">if</span>(length(t_nn_ld_)&gt;=<span class="number">5</span>)&#123;</div><div class="line">    t_nn_ld_=t_nn_ld_[<span class="number">1</span>:<span class="number">5</span>]</div><div class="line">&#125;</div><div class="line"><span class="comment">#t_nn_ld_</span></div></pre></td></tr></table></figure>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">print(<span class="string">"rec :"</span>)</div><div class="line">t_nn_ld_</div></pre></td></tr></table></figure>
+<pre><code>[1] &quot;rec :&quot;
+
+
+91 5
+12 4
+23 3
+68 3
+79 3
+</code></pre><figure class="highlight r"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">print(<span class="string">"names :"</span>)</div><div class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> (<span class="number">1</span>:length(t_nn_ld_)))&#123;</div><div class="line">    t_nn_ld_[i]=V(gg)[as.integer(names(t_nn_ld_[i]))]$label</div><div class="line">&#125;</div><div class="line">t_nn_ld_</div></pre></td></tr></table></figure>
+<pre><code>[1] &quot;names :&quot;
+
+
+91 &apos;UtahState&apos;
+12 &apos;NorthTexas&apos;
+23 &apos;Arizona&apos;
+68 &apos;Nevada&apos;
+79 &apos;WashingtonState&apos;
+</code></pre><h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a href="http://cos.name/2011/04/exploring-renren-social-network/" target="_blank" rel="external">http://cos.name/2011/04/exploring-renren-social-network/</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;A-real-network-dataset-analysis&quot;&gt;&lt;a href=&quot;#A-real-network-dataset-analysis&quot; class=&quot;headerlink&quot; title=&quot;A real network dataset analysis&quot;&gt;&lt;/a&gt;A real network dataset analysis&lt;/h2&gt;&lt;figure class=&quot;highlight r&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;library&lt;/span&gt;(igraph)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+      <category term="Algorithm" scheme="http://localhost:4000/categories/Algorithm/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Windows7 + ArchLinux xfce 双系统教程</title>
+    <link href="http://localhost:4000/2016/windows7-archlinux-xfce-installation-turorial.html"/>
+    <id>http://localhost:4000/2016/windows7-archlinux-xfce-installation-turorial.html</id>
+    <published>2016-11-29T13:13:52.000Z</published>
+    <updated>2016-12-10T15:25:35.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Windows7-ArchLinux-xfce-双系统教程"><a href="#Windows7-ArchLinux-xfce-双系统教程" class="headerlink" title="Windows7 + ArchLinux xfce 双系统教程"></a>Windows7 + ArchLinux xfce 双系统教程</h2><h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>Archlinux官网下载admincd镜像</p>
+<blockquote>
+<p><a href="http://www.archlinux.org/" target="_blank" rel="external">http://www.archlinux.org/</a></p>
+</blockquote>
+<p>rufus刻录入U盘</p>
+<blockquote>
+<p><a href="https://rufus.akeo.ie/" target="_blank" rel="external">https://rufus.akeo.ie/</a></p>
+</blockquote>
+<p>Windows 压缩卷压缩空闲空间（linux安装空间）<br>Windows U盘启动进入archlinux安装盘</p>
+<a id="more"></a>
+<h3 id="安装基本系统"><a href="#安装基本系统" class="headerlink" title="安装基本系统"></a>安装基本系统</h3><p>查看分区信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fdisk -l</div></pre></td></tr></table></figure></p>
+<p>分区<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cfdisk</div></pre></td></tr></table></figure></p>
+<p>选择free space，new创建archlinux分区，参考:</p>
+<table>
+<thead>
+<tr>
+<th>盘符</th>
+<th>内容</th>
+<th>大小</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dev/sdaX</td>
+<td>/boot</td>
+<td>200M(1G)</td>
+<td>83 linux</td>
+<td>引导区</td>
+</tr>
+<tr>
+<td>dev/sdaX+1</td>
+<td>/swap</td>
+<td>&gt;=内存</td>
+<td>82 swap</td>
+<td>交换分区</td>
+</tr>
+<tr>
+<td>dev/sdaX+2</td>
+<td>/</td>
+<td>50% of FreeSpace - dev/sdaX - dev/sdaX+1</td>
+<td>83 linux</td>
+<td>根分区</td>
+</tr>
+<tr>
+<td>dev/sdaX+3</td>
+<td>/home</td>
+<td>50% of FreeSpace</td>
+<td>83 linux</td>
+<td>用户目录</td>
+</tr>
+</tbody>
+</table>
+<p>write写入</p>
+<p>格式化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mkfs.ext4 /dev/sdaX</div><div class="line">mkswap /dev/sdaX+1</div><div class="line">mkfs.ext4 /dev/sdaX+2</div><div class="line">mkfs.ext4 /dev/sdaX+3</div></pre></td></tr></table></figure></p>
+<p>挂载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">mount /dev/sdaX+2 /mnt</div><div class="line">mkdir /mnt/boot</div><div class="line">mount /dev/sdaX /mnt/boot</div><div class="line">swapon /dev/sdaX+1</div><div class="line">mkdir /mnt/home</div><div class="line">mount /dev/sdaX+3 /mnt/home</div></pre></td></tr></table></figure></p>
+<p>配置pacman源(163)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nano -w /etc/pacman</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Ctrl+O保存 Ctrl+X退出</p>
+</blockquote>
+<p>首行添加</p>
+<blockquote>
+<p>## Score = 0.1 China<br>Server = <a href="http://mirrors.163.com/archlinux/$repo/os/$arch" target="_blank" rel="external">http://mirrors.163.com/archlinux/$repo/os/$arch</a></p>
+</blockquote>
+<p>连接网络(有线参考官方wiki)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wifi-menu</div><div class="line">pacman -Syy(更新本地库和软件，不更新软件使用-Sy)</div></pre></td></tr></table></figure></p>
+<p>安装基本系统<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacstrap -i /mnt base base-devel net-tools dialog</div></pre></td></tr></table></figure></p>
+<p>生成fstab<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">genfstab -U -p /mnt &gt;&gt; /mnt/etc/fstab</div><div class="line">chroot</div><div class="line">arch-chroot /mnt /bin/bash</div></pre></td></tr></table></figure></p>
+<p>配置语言<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">nano -w /etc/locale.gen(开启zh_CN全部编码、en_US.UTF-8)</div><div class="line">locale.gen</div><div class="line">echo LANG=en_US.UTF-8 &gt;&gt; /etc/locale.conf</div></pre></td></tr></table></figure></p>
+<p>设置vconsole（可选）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nano -w /etc/vconsole.conf</div></pre></td></tr></table></figure></p>
+<p>添加</p>
+<blockquote>
+<p>KEYMAP=us<br>FONT=</p>
+</blockquote>
+<p>时间查看(时间修改应和windows7保持一致，一般不需要修改)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">date</div></pre></td></tr></table></figure></p>
+<p>设置主机名<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">echo 主机名 &gt; /etc/hostname</div><div class="line">nano -w /etc/hosts</div></pre></td></tr></table></figure></p>
+<p>localhost后添加 主机名 例</p>
+<blockquote>
+<p>127.0.0.1    localhost.localdomain    localhost 主机名<br>::1            localhost.localdomain    localhost 主机名</p>
+</blockquote>
+<p>生成初始ramdisk环境<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mkinitcpio -p linux</div></pre></td></tr></table></figure></p>
+<p>修改root密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">passwd</div></pre></td></tr></table></figure></p>
+<p>创建普通用户<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">useradd -m -g users -G wheel,video,audio -s /bin/bash 用户名</div><div class="line">passwd 用户名</div></pre></td></tr></table></figure></p>
+<p>安装启动器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S grub-bios</div></pre></td></tr></table></figure></p>
+<p>安装grub至boot分区<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">chattr -i /boot/grub/i386-pc/core.img</div><div class="line">grub-install --target=i386-pc --debug --force /dev/sdaX(/boot所在分区)</div><div class="line">chattr +i /boot/grub/i386-pc/core.img</div><div class="line">grub-mkconfig -o /boot/grub/grub.cfg</div></pre></td></tr></table></figure></p>
+<p>重启<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">exit</div><div class="line">umount /mnt/boot</div><div class="line">umount /mnt/home</div><div class="line">umount /mnt</div><div class="line">reboot</div></pre></td></tr></table></figure></p>
+<p>弹出U盘进入windows</p>
+<h3 id="windows引导archlinux"><a href="#windows引导archlinux" class="headerlink" title="windows引导archlinux"></a>windows引导archlinux</h3><p>安装easybcd(或grub4dos)<br>点击Add New Entry，选择NeoGrub，点击Install，点击Configure<br>添加内容:</p>
+<blockquote>
+<p>default 0<br>timeout 1</p>
+<p>title Chainload into GRUB v2<br>root (hd0,Y)<br>chainloader +1<br>boot</p>
+</blockquote>
+<p>此处hd0为第一块硬盘，第二块hd1。Y表示分区号，主分区分别用(hd0m0)~(hd0,3)表示，逻辑分区从(hd0,4)开始，第一逻辑分区(hd0,4),第二逻辑分区(hd0,5)，以此类推。一般情况c盘用(hd0,0),D盘用(hd0,5)。光盘用(cd)表示，第一软驱用(fd0)表示。可参照下表,</p>
+<table>
+<thead>
+<tr>
+<th>盘符</th>
+<th>C:</th>
+<th>D:</th>
+<th>E:</th>
+<th>F:</th>
+<th>G:</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>表示</td>
+<td>(hd0,0)</td>
+<td>(hd0,4)</td>
+<td>(hd0,5)</td>
+<td>(hd0,6)</td>
+<td>(hd0,7)</td>
+</tr>
+</tbody>
+</table>
+<p>保存后(Advanced Settings可修改选项名称，Save Settings保存)重启</p>
+<p>引导原理：<br>windows bcd添加grub引导项，grub引导archlinux的grub启动archlinux系统。（链式引导 chainloader）</p>
+<p>选择第二项进入archlinux</p>
+<h3 id="安装桌面环境"><a href="#安装桌面环境" class="headerlink" title="安装桌面环境"></a>安装桌面环境</h3><p>连接网络(有线参考官方wiki)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wifi-menu</div></pre></td></tr></table></figure></p>
+<p>安装驱动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pacman -S alsa-utils(声卡)</div><div class="line">pacman -S mesa xf86-video-intel(intel显卡,A卡:xf86-video-ati，N卡：xf86-video-nouveau)</div><div class="line">pacman -S xf86-input-synaptics(触摸板)</div></pre></td></tr></table></figure></p>
+<p>安装xorg<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -S xorg xorg-twm xorg-xinit xterm</div><div class="line">startx测试，启动界面(成功)，exit退出</div></pre></td></tr></table></figure></p>
+<p>安装xfce4<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -s xfce4 (默认全部)</div><div class="line">nano -w ~/.xinitrc</div></pre></td></tr></table></figure></p>
+<p>添加</p>
+<blockquote>
+<p>exec startxfce4</p>
+</blockquote>
+<p>添加执行权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">chmod +x ~/.xinitrc</div><div class="line">startx可启动桌面环境</div></pre></td></tr></table></figure></p>
+<p>登陆管理器lightdm或sddm(可选,配置参考官方wiki)<br>Aur可使用yaourt(可选)</p>
+<p>安装终端<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S xfce4-terminal</div></pre></td></tr></table></figure></p>
+<p>安装网络管理<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -S networkmanager</div><div class="line">ststemctl enable networkmanager</div></pre></td></tr></table></figure></p>
+<p>中文字体<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S wqy-zenhei wqy-microhei ttf-arphic-ukai ttf-arphic-uming wqy-bitmapfont opendesktop-uming(一种或多种)</div></pre></td></tr></table></figure></p>
+<p>输入法ibus-rime(或fcitx)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pacman -S ibus-rime</div><div class="line">nano -w ~/.xprofile</div></pre></td></tr></table></figure></p>
+<p>添加</p>
+<blockquote>
+<p>export GTK_IM_MODULE=ibus<br>export QT_IM_MODULE=ibus<br>export XMODIFIERS=@im=ibus</p>
+</blockquote>
+<p>安装解压<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pacman -S unrar unzip p7zip</div></pre></td></tr></table></figure></p>
+<p>其他Applications<br><a href="https://wiki.archlinux.org/index.php/List_of_applications" target="_blank" rel="external">https://wiki.archlinux.org/index.php/List_of_applications</a><br><a href="http://packages.archlinux.org" target="_blank" rel="external">http://packages.archlinux.org</a></p>
+<p>完成</p>
+<p>Reference</p>
+<p>1.Archlinux installation guide<br><a href="http://wiki.archlinux.org/index.php/Installation_guide" target="_blank" rel="external">http://wiki.archlinux.org/index.php/Installation_guide</a></p>
+<p>2.Archlinux wiki<br><a href="http://wiki.archlinux.org/" target="_blank" rel="external">http://wiki.archlinux.org/</a></p>
+<p>3.Archlinux 安装教程<br><a href="http://blog.lucode.net/linux/archlinux-install-tutorial.html" target="_blank" rel="external">http://blog.lucode.net/linux/archlinux-install-tutorial.html</a></p>
+<p>4.Archlinux 2015.07.01 和 Windows7 双系统 安装教程<br><a href="http://www.cnblogs.com/fangying7/p/3803290.html" target="_blank" rel="external">http://www.cnblogs.com/fangying7/p/3803290.html</a></p>
+<p>5.Windows7与arch-linux双系统安装方法<br><a href="http://m.blog.csdn.net/article/details?id=11377195" target="_blank" rel="external">http://m.blog.csdn.net/article/details?id=11377195</a></p>
+<p>6.Win7 添加grub引导Linux最简单方法<br><a href="http://m.blog.chinaunix.net/uid-14735472-id-2845735.html" target="_blank" rel="external">http://m.blog.chinaunix.net/uid-14735472-id-2845735.html</a></p>
+<p>7.Grub4dos教程<br><a href="http://wk.baidu.com/view/fc83026aaf1ffc4ffe47acb9#1" target="_blank" rel="external">http://wk.baidu.com/view/fc83026aaf1ffc4ffe47acb9#1</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Windows7-ArchLinux-xfce-双系统教程&quot;&gt;&lt;a href=&quot;#Windows7-ArchLinux-xfce-双系统教程&quot; class=&quot;headerlink&quot; title=&quot;Windows7 + ArchLinux xfce 双系统教程&quot;&gt;&lt;/a&gt;Windows7 + ArchLinux xfce 双系统教程&lt;/h2&gt;&lt;h3 id=&quot;准备&quot;&gt;&lt;a href=&quot;#准备&quot; class=&quot;headerlink&quot; title=&quot;准备&quot;&gt;&lt;/a&gt;准备&lt;/h3&gt;&lt;p&gt;Archlinux官网下载admincd镜像&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.archlinux.org/&quot;&gt;http://www.archlinux.org/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;rufus刻录入U盘&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://rufus.akeo.ie/&quot;&gt;https://rufus.akeo.ie/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Windows 压缩卷压缩空闲空间（linux安装空间）&lt;br&gt;Windows U盘启动进入archlinux安装盘&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Linux" scheme="http://localhost:4000/categories/Linux/"/>
+    
+    
+  </entry>
+  
+</feed>
